@@ -740,6 +740,7 @@ cube_to_upscale = cube_to_upscale.merge_cubes(cube_NDWI_median_1)
 # | eval: false
 # cube_to_upscale.execute_batch(outputfile="data/sif_predictors_cube_high.nc")
 ```
+
 Checking that everything is in order with the code to upscale
 ```{python}
 cube_to_upscale_local = xr.open_dataset("data/sif_predictors_cube_high.nc")
