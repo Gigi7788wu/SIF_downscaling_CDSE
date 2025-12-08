@@ -359,7 +359,7 @@ plt.tight_layout()
 ```
 
 ::: {.callout-important}
-The LST composite looks heavily influenced by the orbits. For sure can do better...for example [Terrascope Sentinel-3 Level 3 Land Surface Temperature daily synthesis product](https://docs.terrascope.be/DataProducts/Sentinel-3/ProductsOverview.html)
+The LST composite looks heavily influenced by the orbits. For sure it can be better...for example [Terrascope Sentinel-3 Level 3 Land Surface Temperature daily synthesis product](https://docs.terrascope.be/DataProducts/Sentinel-3/ProductsOverview.html)
 
 OR maybe Sentinel-3 SYN SLSTR bands...
 :::
@@ -795,7 +795,7 @@ print(sif_downscaled_local)
 ```
 
 ```{python}
-fig, axs = plt.subplots(nrows=2, figsize=(6, 15))
+fig, axs = plt.subplots(nrows=2, figsize=(6, 10))
 cube_sif_local.plot(ax=axs[0])
 axs[0].set_title("SIF (Original)")
 sif_downscaled_local.plot(ax=axs[1])
