@@ -251,13 +251,6 @@ cube_NDVI = (nir - red) / (nir + red)
 
 cube_NDVI = cube_NDVI.rename_labels(dimension="bands", target=["NDVI"])
 
-cube_IWV = connection.load_collection(
-    "SENTINEL3_OLCI_L2_LAND",
-    spatial_extent=spatial_extent_prototype,
-    temporal_extent=temporal_extent_prototype,
-    bands=["IWV"],
-)
-
 cube_OLCI_qc = connection.load_collection(
     "SENTINEL3_OLCI_L2_LAND",
     spatial_extent=spatial_extent_prototype,
@@ -265,6 +258,30 @@ cube_OLCI_qc = connection.load_collection(
     bands=["LQSF"],
 )
 
+swir = connection.load_collection(
+    "SENTINEL3_SYN_L2_SYN",
+    spatial_extent=spatial_extent_prototype,
+    temporal_extent=temporal_extent_prototype,
+    bands=["Syn_S5N_reflectance"],
+)
+
+nir_syn = connection.load_collection(
+    "SENTINEL3_SYN_L2_SYN",
+    spatial_extent=spatial_extent_prototype,
+    temporal_extent=temporal_extent_prototype,
+    bands=["Syn_Oa17_reflectance"],
+)
+
+cube_NDWI = (nir_syn - swir) / (nir_syn + swir)
+
+cube_NDWI = cube_NDWI.rename_labels(dimension="bands", target=["NDWI"])
+
+cube_syn_qc = connection.load_collection(
+    "SENTINEL3_SYN_L2_SYN",
+    spatial_extent=spatial_extent_prototype,
+    temporal_extent=temporal_extent_prototype,
+    bands=["CLOUD_flags"],
+)
 
 ```
 
@@ -286,10 +303,13 @@ cube_LST_masked = cube_LST.mask(mask)
 
 mask_olci = cube_OLCI_qc > 10000
 
-
-cube_IWV_masked = cube_IWV.mask(mask_olci)
-
 cube_NDVI_masked = cube_NDVI.mask(mask_olci)
+```
+
+```{python}
+mask_syn = cube_syn_qc > 0
+
+cube_NDWI_masked = cube_NDWI.mask(mask_syn)
 ```
 
 If we call one of the cubes we can see the process graph that is created by openEO:
@@ -311,7 +331,7 @@ cube_LST_median = cube_LST_masked.reduce_temporal(reducer="median")
 
 cube_NDVI_median = cube_NDVI_masked.reduce_temporal(reducer="median")
 
-cube_IWV_median = cube_IWV_masked.reduce_temporal(reducer="median")
+cube_NDWI_median = cube_NDWI_masked.reduce_temporal(reducer="median")
 
 ```
 
@@ -329,7 +349,7 @@ Then we will inspect the products, for that we need to execute the processors fo
 # cube_SIF_original_median.execute_batch(outputfile="data/cube_SIF_median.tif")
 # cube_LST_median.execute_batch(outputfile="data/cube_LST_median.tif")
 # cube_NDVI_median.execute_batch(outputfile="data/cube_NDVI_median.tif")
-# cube_IWV_median.execute_batch(outputfile="data/cube_IWV_median.tif")
+# cube_NDWI_median.execute_batch(outputfile="data/cube_NDWI_median.tif")
 ```
 
 
@@ -339,7 +359,7 @@ cube_sif_local = rio.open_rasterio(
 )
 cube_lst_local = rio.open_rasterio(filename="data/cube_LST_median.tif")
 cube_ndvi_local = rio.open_rasterio(filename="data/cube_NDVI_median.tif")
-cube_iwv_local = rio.open_rasterio(filename="data/cube_IWV_median.tif")
+cube_iwv_local = rio.open_rasterio(filename="data/cube_NDWI_median.tif")
 
 ```
 
@@ -351,8 +371,8 @@ cube_lst_local.plot(ax=axs[1])
 axs[1].set_title("LST")
 cube_ndvi_local.plot(ax=axs[2], vmin=0, vmax=1)
 axs[2].set_title("NDVI")
-cube_iwv_local.plot(ax=axs[3])
-axs[3].set_title("IWV")
+cube_iwv_local.plot(ax=axs[3], robust=True)
+axs[3].set_title("NDWI")
 
 plt.tight_layout()
 
@@ -377,7 +397,7 @@ cube_NDVI_median_low = cube_NDVI_median.resample_cube_spatial(
     target=cube_SIF_original_median, method="med"
 )
 
-cube_IWV_median_low = cube_IWV_median.resample_cube_spatial(
+cube_NDWI_median_low = cube_NDWI_median.resample_cube_spatial(
     target=cube_SIF_original_median, method="med"
 )
 ```
@@ -389,7 +409,7 @@ dataset_SIF_low = cube_SIF_original_median.merge_cubes(cube_LST_median_low)
 
 dataset_SIF_low = dataset_SIF_low.merge_cubes(cube_NDVI_median_low)
 
-dataset_SIF_low = dataset_SIF_low.merge_cubes(cube_IWV_median_low)
+dataset_SIF_low = dataset_SIF_low.merge_cubes(cube_NDWI_median_low)
 
 ```
 
@@ -426,8 +446,8 @@ dataset_sif_low_local["LST"].plot(ax=axs[1])
 axs[1].set_title("LST")
 dataset_sif_low_local["NDVI"].plot(ax=axs[2])
 axs[2].set_title("NDVI")
-dataset_sif_low_local["IWV"].plot(ax=axs[3])
-axs[3].set_title("IWV")
+dataset_sif_low_local["NDWI"].plot(ax=axs[3])
+axs[3].set_title("NDWI")
 
 plt.tight_layout()
 
