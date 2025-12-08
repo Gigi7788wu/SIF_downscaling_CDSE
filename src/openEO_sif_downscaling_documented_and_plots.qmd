@@ -484,11 +484,11 @@ First we need to define the boundaries and start values for $b1$, $b2$, $b3$, $b
 ```{python}
 # the order for each variable follows: b1,b2,b3,b4,b5,b6
 
-param_min = [0, 0.1, -100, -1, -310, 1]
+param_min = [0, 0.1, -1, -1, -310, 1]
 
 param_ini = [1, 2, 0, 0, -295, 10]
 
-param_max = [1.5, 5, 100, 1, -290, 50]
+param_max = [1.5, 5, 1, 1, -290, 50]
 ```
 
 
@@ -744,6 +744,8 @@ Checking that everything is in order with the code to upscale
 cube_to_upscale_local = xr.open_dataset("data/sif_predictors_cube_high.nc")
 print(cube_to_upscale_local)
 ```
+
+
 ## Downscaling SIF
 
 To downscale SIF we will use @def-sif. The code implementation of @def-sif is available at [udf_sif_downscaling.py](https://github.com/dpabon/SIF_downscaling_CDSE/blob/main/sif_downscaling_openEO_CDSE/udf/udf_sif_downscaling.py). Then we can call the ```udf``` using:
