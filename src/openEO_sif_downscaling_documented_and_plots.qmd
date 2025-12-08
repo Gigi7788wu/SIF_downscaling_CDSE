@@ -484,11 +484,11 @@ First we need to define the boundaries and start values for $b1$, $b2$, $b3$, $b
 ```{python}
 # the order for each variable follows: b1,b2,b3,b4,b5,b6
 
-param_min = [0, 0.1, 0.0, -1, -310, 1]
+param_min = [0, 0.1, -100, -1, -310, 1]
 
-param_ini = [1, 2, 50.0, 0, -295, 10]
+param_ini = [1, 2, 0, 0, -295, 10]
 
-param_max = [1.5, 5, 500.0, 1, -290, 50]
+param_max = [1.5, 5, 100, 1, -290, 50]
 ```
 
 
@@ -723,7 +723,7 @@ Originally the IWV products are 300 meters resolution, as Sentinel-3 LST product
 
 ```{python}
 
-cube_IWV_median_1 = cube_IWV_median.resample_cube_spatial(target=cube_LST_median)
+cube_NDWI_median_1 = cube_NDWI_median.resample_cube_spatial(target=cube_LST_median)
 ```
 
 Then, we can concatenate all the variables in a single cube for prediction:
@@ -733,7 +733,7 @@ cube_to_upscale = parameters_cube_high_median.merge_cubes(cube_LST_median)
 
 cube_to_upscale = cube_to_upscale.merge_cubes(cube_NDVI_median)
 
-cube_to_upscale = cube_to_upscale.merge_cubes(cube_IWV_median_1)
+cube_to_upscale = cube_to_upscale.merge_cubes(cube_NDWI_median_1)
 ```
 
 ```{python}
