@@ -19,9 +19,10 @@ You can run the processor following the [tutorial](https://dpabon.github.io/SIF_
 - Then re-create the conda environment:
 
 ```cd SIF_downscaling_CDSE```
+
 ```conda env create -f environment.yml```
 
-Now you have everything setup to run the tutorial.
+Now you have everything setup to run the [tutorial](https://dpabon.github.io/SIF_downscaling_CDSE/).
 
 
 - ```openEO_sif_downscaling.py``` contains the active development of the SIF downscaling workflow using openEO.
@@ -33,13 +34,16 @@ Now you have everything setup to run the tutorial.
 ## FAQ
 
 - Q: I have problems to run the tutorial?
-    A: Please open an [issue](https://github.com/dpabon/SIF_downscaling_CDSE/issues/new) 
+
+A: Please open an [issue](https://github.com/dpabon/SIF_downscaling_CDSE/issues/new) 
 
 - Q: Can I select a new area to apply the procesor?
- A: Sure, just change the values in the area of interest cell
+ 
+A: Sure, just change the values in the area of interest cell
 
 - Q: How can I contribute?
- A: clone this repository and create pull requests.
+
+A: clone this repository and create pull requests.
 
 
 ## Acknowledgement
