@@ -91,7 +91,7 @@ def apply_datacube(cube: xarray.DataArray, context: dict) -> xarray.DataArray:
 
     SIF_w = input_cube_local["SIF"]
 
-    VI_w = input_cube_local["NDVI"]
+    VI_w = input_cube_local["NIRv"]
 
     LST_w = input_cube_local["LST"]
 

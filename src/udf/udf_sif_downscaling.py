@@ -15,7 +15,7 @@ def apply_datacube(cube: xarray.DataArray, context: dict) -> xarray.DataArray:
     # get the coodinates of the datacube
     # processing data
 
-    VI_w = input_cube_local["NDVI"]
+    VI_w = input_cube_local["NIRv"]
 
     LST_w = input_cube_local["LST"]
 
