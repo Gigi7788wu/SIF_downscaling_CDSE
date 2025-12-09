@@ -42,7 +42,7 @@ def apply_datacube(cube: xarray.DataArray, context: dict) -> xarray.DataArray:
 
         def sif_model(vi, lst, params):
             # Calculates SIF based on the model components.
-            b1, b2, b3, b4, b5, b6 = params
+            b1, b2, b5, b6 = params
             sif_pred = vegetation(vi, b1, b2) * temperature(lst, b5, b6)
             return sif_pred
 
