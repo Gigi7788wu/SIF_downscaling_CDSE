@@ -630,7 +630,7 @@ subprocess.run(git_push)
 
 # plotting the resampled parameters
 
-fig, axs = plt.subplots(nrows=3, ncols=2, figsize=(8, 8))
+fig, axs = plt.subplots(nrows=2, ncols=2, figsize=(8, 8))
 axs = axs.flatten()
 
 for i in range(4):
