@@ -633,7 +633,7 @@ subprocess.run(git_push)
 fig, axs = plt.subplots(nrows=3, ncols=2, figsize=(8, 8))
 axs = axs.flatten()
 
-for i in range(6):
+for i in range(4):
     parameters_high.sel(band=i + 1).plot(ax=axs[i])
     axs[i].set_title(f"b{i + 1}")
 
