@@ -599,7 +599,7 @@ lst_high = lst_high.rename(new_name_or_name_dict={"x": "longitude", "y": "latitu
 
 
 regridder = xe.Regridder(
-    parameters_low, lst_high, method="bilinear", extrap_method="nearest_s2d"
+    parameters_low, lst_high, method="nearest_s2d", extrap_method="nearest_s2d"
 )
 
 parameters_high = regridder(parameters_low)
@@ -773,15 +773,6 @@ sif_downscaled = cube_to_upscale.apply_neighborhood(
 ```
 
 
-```{python}
-"""
-sif_downscaled.execute_batch(
-    outputfile="data/openeo_sif_downscaled.tif",
-    title="SIF_downscaling",
-    description="Predicting SIF at high spatial resolution"
-)
-"""
-```
 
 It is not possible to reduce the number of bands using ```apply_neighborhood``` then we need to just select the first band:
 
