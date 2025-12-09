@@ -551,7 +551,9 @@ lst_high = rio.open_rasterio("data/cube_LST_median.tif")
 lst_high = lst_high.rename(new_name_or_name_dict={"x": "longitude", "y": "latitude"})
 
 
-regridder = xe.Regridder(parameters_low, lst_high, method="nearest_s2d")
+regridder = xe.Regridder(
+    parameters_low, lst_high, method="nearest_s2d", extrap_method="nearest_s2d"
+)
 
 parameters_high = regridder(parameters_low)
 
@@ -602,7 +604,7 @@ item.add_asset(
         href=output_path,  # or use an absolute path / URL
         title="Optimized Parameters High Resolution",
         media_type="image/tiff; application=geotiff",
-        extra_fields={"eo:bands": {"name": ["b1", "b2", "b5", "b6"]}},
+        extra_fields={"eo:bands": [{"name": f"b{i}"} for i in [1, 2, 5, 6]]},
     ),
 )
 
