@@ -659,7 +659,7 @@ parameters_cube_high = connection.load_stac(
     "https://raw.githubusercontent.com/dpabon/SIF_downscaling_CDSE/refs/heads/main/data/results_parameters_high_resolution.json",
     spatial_extent=spatial_extent_prototype,
     temporal_extent=temporal_extent_prototype,
-    bands=["b1", "b2","b5", "b6"],
+    bands=["b1", "b2", "b5", "b6"],
 )
 parameters_cube_high
 
@@ -670,7 +670,14 @@ parameters_cube_high_median = parameters_cube_high
 
 ## Resampling OLCI products at 1 km
 
-Originally the IWV products are 300 meters resolution, as Sentinel-3 LST product is at 1 km (@tbl-predictors) we need to resample these products:
+Originally the OLCI products are 300 meters resolution, as Sentinel-3 LST product is at 1 km (@tbl-predictors) we need to resample the NIRv cube:
+
+```{python}
+cube_NIRv_median_1 = cube_NIRv_median.resample_cube_spatial(
+    target=cube_LST_median, method="med"
+)
+
+```
 
 
 Then, we can concatenate all the variables in a single cube for prediction:
@@ -678,7 +685,7 @@ Then, we can concatenate all the variables in a single cube for prediction:
 ```{python}
 cube_to_upscale = parameters_cube_high_median.merge_cubes(cube_LST_median)
 
-cube_to_upscale = cube_to_upscale.merge_cubes(cube_NIRv_median)
+cube_to_upscale = cube_to_upscale.merge_cubes(cube_NIRv_median_1)
 
 ```
 
@@ -690,6 +697,7 @@ cube_to_upscale = cube_to_upscale.merge_cubes(cube_NIRv_median)
 Checking that everything is in order with the code to upscale
 ```{python}
 cube_to_upscale_local = xr.open_dataset("data/sif_predictors_cube_high.nc")
+
 print(cube_to_upscale_local)
 ```
 
@@ -762,4 +770,46 @@ sif_downscaled_local.plot(ax=axs[1])
 axs[1].set_title("SIF (Downscaled)")
 
 plt.tight_layout()
+```
+
+To validate the downscaling results let's resample the SIF downscaled and compare it with the original product at 5 km.
+
+
+```{python}
+
+sif_downscaled_resampled = sif_downscaled_renamed.resample_cube_spatial(
+    target=cube_SIF_original_median,
+    method="med",
+)
+
+```
+
+```{python}
+# sif_downscaled_resampled.execute_batch("data/sif_downscaled_resampled.tif")
+```
+
+
+```{python}
+sif_downscaled_resampled_local = rio.open_rasterio("data/sif_downscaled_resampled.tif")
+sif_downscaled_resampled_local
+```
+
+
+```{python}
+fig, axs = plt.subplots(nrows=2, figsize=(6, 10))
+cube_sif_local.plot(ax=axs[0])
+axs[0].set_title("SIF (Original)")
+sif_downscaled_resampled_local.plot(ax=axs[1])
+axs[1].set_title("SIF (Downscaled) resampled")
+
+plt.tight_layout()
+```
+
+Now let's do $originalSIF - upscaledSIF$
+
+
+```{python}
+plt.clf()
+differences = cube_sif_local - sif_downscaled_resampled_local
+differences.plot()
 ```
