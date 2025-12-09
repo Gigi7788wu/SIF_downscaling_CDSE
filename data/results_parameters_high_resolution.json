@@ -59,20 +59,14 @@
       "href": "https://github.com/dpabon/SIF_downscaling_CDSE/raw/refs/heads/main/data/results_paramaters_high_resolution.tif",
       "type": "image/tiff; application=geotiff",
       "title": "Optimized Parameters High Resolution",
-      "eo:bands": [
-        {
-          "name": "b1"
-        },
-        {
-          "name": "b2"
-        },
-        {
-          "name": "b3"
-        },
-        {
-          "name": "b4"
-        }
-      ]
+      "eo:bands": {
+        "name": [
+          "b1",
+          "b2",
+          "b5",
+          "b6"
+        ]
+      }
     }
   }
 }

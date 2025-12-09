@@ -604,9 +604,7 @@ item.add_asset(
         href=output_path,  # or use an absolute path / URL
         title="Optimized Parameters High Resolution",
         media_type="image/tiff; application=geotiff",
-        extra_fields={
-            "eo:bands": [{"name": f"b{i + 1}"} for i in range(parameters_high.shape[0])]
-        },
+        extra_fields={"eo:bands": {"name": ["b1", "b2", "b5", "b6"]}},
     ),
 )
 
