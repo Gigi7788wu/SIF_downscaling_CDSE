@@ -480,7 +480,7 @@ parameters_cube_low = dataset_SIF_low.apply_neighborhood(
 )
 
 # changing the name of the ouput
-output_bands = ["b1", "b2", "b3", "b4", "b5", "b6"]
+output_bands = ["b1", "b2", "b5", "b6"]
 
 parameters_cube_low_rename = parameters_cube_low.rename_labels("bands", output_bands)
 
@@ -660,7 +660,7 @@ parameters_cube_high = connection.load_stac(
     "https://raw.githubusercontent.com/dpabon/SIF_downscaling_CDSE/refs/heads/main/data/results_parameters_high_resolution.json",
     spatial_extent=spatial_extent_prototype,
     temporal_extent=temporal_extent_prototype,
-    bands=["b1", "b2", "b3", "b4", "b5", "b6"],
+    bands=["b1", "b2","b5", "b6"],
 )
 parameters_cube_high
 
