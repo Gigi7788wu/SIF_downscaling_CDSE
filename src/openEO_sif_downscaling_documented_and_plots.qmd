@@ -258,31 +258,6 @@ cube_OLCI_qc = connection.load_collection(
     bands=["LQSF"],
 )
 
-swir = connection.load_collection(
-    "SENTINEL3_SYN_L2_SYN",
-    spatial_extent=spatial_extent_prototype,
-    temporal_extent=temporal_extent_prototype,
-    bands=["Syn_S5N_reflectance"],
-)
-
-nir_syn = connection.load_collection(
-    "SENTINEL3_SYN_L2_SYN",
-    spatial_extent=spatial_extent_prototype,
-    temporal_extent=temporal_extent_prototype,
-    bands=["Syn_Oa17_reflectance"],
-)
-
-cube_NDWI = (nir_syn - swir) / (nir_syn + swir)
-
-cube_NDWI = cube_NDWI.rename_labels(dimension="bands", target=["NDWI"])
-
-cube_syn_qc = connection.load_collection(
-    "SENTINEL3_SYN_L2_SYN",
-    spatial_extent=spatial_extent_prototype,
-    temporal_extent=temporal_extent_prototype,
-    bands=["CLOUD_flags"],
-)
-
 ```
 
 
@@ -306,11 +281,6 @@ mask_olci = cube_OLCI_qc > 10000
 cube_NDVI_masked = cube_NDVI.mask(mask_olci)
 ```
 
-```{python}
-mask_syn = cube_syn_qc > 0
-
-cube_NDWI_masked = cube_NDWI.mask(mask_syn)
-```
 
 If we call one of the cubes we can see the process graph that is created by openEO:
  
@@ -331,7 +301,6 @@ cube_LST_median = cube_LST_masked.reduce_temporal(reducer="median")
 
 cube_NDVI_median = cube_NDVI_masked.reduce_temporal(reducer="median")
 
-cube_NDWI_median = cube_NDWI_masked.reduce_temporal(reducer="median")
 
 ```
 
@@ -397,9 +366,6 @@ cube_NDVI_median_low = cube_NDVI_median.resample_cube_spatial(
     target=cube_SIF_original_median, method="med"
 )
 
-cube_NDWI_median_low = cube_NDWI_median.resample_cube_spatial(
-    target=cube_SIF_original_median, method="med"
-)
 ```
 
 Merging all the cubes at low resolution (SIF original resolution)
@@ -408,8 +374,6 @@ Merging all the cubes at low resolution (SIF original resolution)
 dataset_SIF_low = cube_SIF_original_median.merge_cubes(cube_LST_median_low)
 
 dataset_SIF_low = dataset_SIF_low.merge_cubes(cube_NDVI_median_low)
-
-dataset_SIF_low = dataset_SIF_low.merge_cubes(cube_NDWI_median_low)
 
 ```
 
@@ -446,9 +410,6 @@ dataset_sif_low_local["LST"].plot(ax=axs[1])
 axs[1].set_title("LST")
 dataset_sif_low_local["NDVI"].plot(ax=axs[2])
 axs[2].set_title("NDVI")
-dataset_sif_low_local["NDWI"].plot(ax=axs[3])
-axs[3].set_title("NDWI")
-
 plt.tight_layout()
 
 ```
@@ -459,18 +420,14 @@ plt.tight_layout()
 To predict SIF we use the following formulation:
 
 ::: {#def-sif}
-$$SIF = f(V) \cdot f(W) \cdot f(T)$$
+$$SIF = f(V) \cdot f(T)$$
 :::
 
 where $f(V)$ represents the vegetation module and $V$ is a vegation index: 
 $$f(V) = b_2 \cdot V^{b_1}$$
 
-$f(W)$ represents the water module where $W$ represent a water availabiliy variables (e.g. ET, NDWI):
-$$
-f(W) = \frac{1}{1 + e^{b_3 \cdot (b_4 - W)}}
-$$
 
-Finally $f(T)$ represents the temperature module where $T$ is a variable that represent temperature stress (e.g. air temperature at 2 meters, or land surface temperature)
+$f(T)$ represents the temperature module where $T$ is a variable that represent temperature stress (e.g. air temperature at 2 meters, or land surface temperature)
 
 $$
 f(T) = e^{-\frac{(T + b_5)^2}{2b_6^2}}
@@ -479,16 +436,16 @@ $$
 
 Given the previous formulation we optimize the function using L-BFGS-B and a spatial moving window with 40 observations. The optimization function is defined in [udf_parameters_optim_low_res.py](https://github.com/dpabon/SIF_downscaling_CDSE/blob/main/sif_downscaling_openEO_CDSE/udf/udf_parameters_optim_low_res.py).
 
-First we need to define the boundaries and start values for $b1$, $b2$, $b3$, $b4$, $b5$ parameters:
+First we need to define the boundaries and start values for $b1$, $b2$, $b5$ $b6$ parameters:
 
 ```{python}
 # the order for each variable follows: b1,b2,b3,b4,b5,b6
 
-param_min = [0, 0.1, -1, -1, -310, 1]
+param_min = [0, 0.1, -310, 1]
 
-param_ini = [1, 2, 0, 0, -295, 10]
+param_ini = [1, 2, -295, 10]
 
-param_max = [1.5, 5, 1, 1, -290, 50]
+param_max = [1.5, 5, -290, 50]
 ```
 
 

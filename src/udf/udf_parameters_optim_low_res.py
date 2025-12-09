@@ -25,12 +25,6 @@ def apply_datacube(cube: xarray.DataArray, context: dict) -> xarray.DataArray:
         veg = b2 * np.power(vi_np, b1)
         return veg
 
-    def water(et, b3, b4):
-        et_np = np.asarray(et)
-
-        wat = 1.0 / (1.0 + np.exp(b3 * (b4 - et_np)))
-        return wat
-
     def temperature(lst, b5, b6):
         # Gaussian function, ensure b6 (std dev) is positive
         lst_np = np.asarray(lst)
@@ -40,7 +34,7 @@ def apply_datacube(cube: xarray.DataArray, context: dict) -> xarray.DataArray:
     def sif_model(vi, et, lst, params):
         # Calculates SIF based on the model components.
         b1, b2, b3, b4, b5, b6 = params
-        sif_pred = vegetation(vi, b1, b2) * water(et, b3, b4) * temperature(lst, b5, b6)
+        sif_pred = vegetation(vi, b1, b2) * temperature(lst, b5, b6)
         return sif_pred
 
     def cost_function(params, vi, et, lst, sif_observed):
@@ -53,9 +47,7 @@ def apply_datacube(cube: xarray.DataArray, context: dict) -> xarray.DataArray:
         return cost
 
     # From xarray apply_ufunc
-    def optimize_params_window(
-        sif_w, ogvi_w, ndwi_w, lst_w, param_ini, param_bounds, min_obs
-    ):
+    def optimize_params_window(sif_w, ogvi_w, lst_w, param_ini, param_bounds, min_obs):
         """
         Wrapper function to optimize SIF parameters for a single window.
         Designed to be used with apply_ufunc or iteration.
@@ -63,9 +55,7 @@ def apply_datacube(cube: xarray.DataArray, context: dict) -> xarray.DataArray:
         """
         # Flatten the window arrays and filter out NaNs
         # Important: Filter consistently across all variables
-        mask = (
-            ~np.isnan(sif_w) & ~np.isnan(ogvi_w) & ~np.isnan(ndwi_w) & ~np.isnan(lst_w)
-        )
+        mask = ~np.isnan(sif_w) & ~np.isnan(ogvi_w) & ~np.isnan(lst_w)
         n_valid = np.sum(mask)
 
         if n_valid < min_obs:
@@ -74,7 +64,6 @@ def apply_datacube(cube: xarray.DataArray, context: dict) -> xarray.DataArray:
 
         sif_obs_f = sif_w[mask]
         vi_f = ogvi_w[mask]
-        et_f = ndwi_w[mask]  # Using NDWI as proxy for water stress/ET effect
         lst_f = lst_w[mask]
 
         # Define bounds for L-BFGS-B
@@ -83,7 +72,7 @@ def apply_datacube(cube: xarray.DataArray, context: dict) -> xarray.DataArray:
         result = minimize(
             cost_function,
             x0=param_ini,
-            args=(vi_f, et_f, lst_f, sif_obs_f),
+            args=(vi_f, lst_f, sif_obs_f),
             method="L-BFGS-B",
             bounds=bounds_scipy,
             options={"maxiter": 1000, "ftol": 1e-7, "gtol": 1e-5},
@@ -104,11 +93,9 @@ def apply_datacube(cube: xarray.DataArray, context: dict) -> xarray.DataArray:
 
     VI_w = input_cube_local["NDVI"]
 
-    ET_w = input_cube_local["NDWI"]
-
     LST_w = input_cube_local["LST"]
 
-    output_bands = ["b1", "b2", "b3", "b4", "b5", "b6"]
+    output_bands = ["b1", "b2", "b5", "b6"]
 
     parameters_cube = xarray.apply_ufunc(
         optimize_params_window,  # Function to apply
@@ -117,9 +104,6 @@ def apply_datacube(cube: xarray.DataArray, context: dict) -> xarray.DataArray:
             x="lat_roll", y="lon_roll"
         ),
         VI_w.rolling(x=window_size_lat, y=window_size_lon, center=True).construct(
-            x="lat_roll", y="lon_roll"
-        ),
-        ET_w.rolling(x=window_size_lat, y=window_size_lon, center=True).construct(
             x="lat_roll", y="lon_roll"
         ),
         LST_w.rolling(x=window_size_lat, y=window_size_lon, center=True).construct(
@@ -136,11 +120,10 @@ def apply_datacube(cube: xarray.DataArray, context: dict) -> xarray.DataArray:
             ["lat_roll", "lon_roll"],
             ["lat_roll", "lon_roll"],
             ["lat_roll", "lon_roll"],
-            ["lat_roll", "lon_roll"],
         ],
         # Define output core dimensions (the parameters dimension):
         output_core_dims=[["bands"]],
-        dask_gufunc_kwargs={"output_sizes": {"bands": 6}},
+        dask_gufunc_kwargs={"output_sizes": {"bands": 4}},
         # Specify the parameters dimension coordinates:
         dask="parallelized",  # Enable Dask parallelization
         output_dtypes=[np.float64],  # Specify output data type
