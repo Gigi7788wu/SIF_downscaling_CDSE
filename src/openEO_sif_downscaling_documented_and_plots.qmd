@@ -512,7 +512,7 @@ print(parameters_cube_local)
 
 ```{python}
 # plt.clf()
-fig, axs = plt.subplots(nrows=2, ncols=2, figsize=(8, 8))
+fig, axs = plt.subplots(nrows=2, ncols=2, figsize=(8, 6))
 axs = axs.flatten()
 counter = 0
 for i in [1, 2, 5, 6]:
