@@ -31,15 +31,15 @@ def apply_datacube(cube: xarray.DataArray, context: dict) -> xarray.DataArray:
         temp = np.exp(-0.5 * np.power((lst_np + b5) / b6, 2))
         return temp
 
-    def sif_model(vi, et, lst, params):
+    def sif_model(vi, lst, params):
         # Calculates SIF based on the model components.
-        b1, b2, b3, b4, b5, b6 = params
+        b1, b2, b5, b6 = params
         sif_pred = vegetation(vi, b1, b2) * temperature(lst, b5, b6)
         return sif_pred
 
-    def cost_function(params, vi, et, lst, sif_observed):
+    def cost_function(params, vi, lst, sif_observed):
         # Least squares cost function for optimization.
-        sif_pred = sif_model(vi, et, lst, params)
+        sif_pred = sif_model(vi, lst, params)
 
         # Calculate sum of squares, ignoring NaNs
         cost = np.nansum((sif_pred - sif_observed) ** 2)

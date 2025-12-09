@@ -318,7 +318,6 @@ Then we will inspect the products, for that we need to execute the processors fo
 # cube_SIF_original_median.execute_batch(outputfile="data/cube_SIF_median.tif")
 # cube_LST_median.execute_batch(outputfile="data/cube_LST_median.tif")
 # cube_NDVI_median.execute_batch(outputfile="data/cube_NDVI_median.tif")
-# cube_NDWI_median.execute_batch(outputfile="data/cube_NDWI_median.tif")
 ```
 
 
@@ -328,20 +327,17 @@ cube_sif_local = rio.open_rasterio(
 )
 cube_lst_local = rio.open_rasterio(filename="data/cube_LST_median.tif")
 cube_ndvi_local = rio.open_rasterio(filename="data/cube_NDVI_median.tif")
-cube_iwv_local = rio.open_rasterio(filename="data/cube_NDWI_median.tif")
 
 ```
 
 ```{python}
-fig, axs = plt.subplots(nrows=4, figsize=(6, 15))
+fig, axs = plt.subplots(nrows=3, figsize=(6, 15))
 cube_sif_local.plot(ax=axs[0])
 axs[0].set_title("SIF")
 cube_lst_local.plot(ax=axs[1])
 axs[1].set_title("LST")
 cube_ndvi_local.plot(ax=axs[2], vmin=0, vmax=1)
 axs[2].set_title("NDVI")
-cube_iwv_local.plot(ax=axs[3], robust=True)
-axs[3].set_title("NDWI")
 
 plt.tight_layout()
 
@@ -403,7 +399,7 @@ print(dataset_sif_low_local)
 ```
 
 ```{python}
-fig, axs = plt.subplots(nrows=4, figsize=(6, 15))
+fig, axs = plt.subplots(nrows=3, figsize=(6, 15))
 dataset_sif_low_local["SIF"].plot(ax=axs[0])
 axs[0].set_title("SIF")
 dataset_sif_low_local["LST"].plot(ax=axs[1])
@@ -516,10 +512,10 @@ print(parameters_cube_local)
 
 ```{python}
 # plt.clf()
-fig, axs = plt.subplots(nrows=3, ncols=2, figsize=(8, 8))
+fig, axs = plt.subplots(nrows=2, ncols=2, figsize=(8, 8))
 axs = axs.flatten()
 
-for i in range(6):
+for i in range(4):
     parameters_cube_local.sel(band=i + 1).plot(ax=axs[i])
     axs[i].set_title(f"b{i + 1}")
 
