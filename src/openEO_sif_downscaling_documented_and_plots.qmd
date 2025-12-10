@@ -568,7 +568,7 @@ parameters_high = parameters_high.rename(
 
 # Saving the resample raster
 
-parameters_high_da.rio.to_raster("data/results_paramaters_high_resolution.tif")
+parameters_high.rio.to_raster("data/results_paramaters_high_resolution.tif")
 
 
 output_path = "https://github.com/dpabon/SIF_downscaling_CDSE/raw/refs/heads/main/data/results_paramaters_high_resolution.tif"
@@ -764,14 +764,12 @@ print(sif_downscaled_local)
 ```
 
 ```{python}
-fig, axs = plt.subplots(nrows=3, figsize=(6, 10))
+fig, axs = plt.subplots(nrows=2, figsize=(6, 10))
 cube_sif_local.plot(ax=axs[0])
 axs[0].set_title("SIF (Original)")
 sif_downscaled_local.plot(ax=axs[1])
 axs[1].set_title("SIF (Downscaled)")
-cube_nirv_local.plot(ax=axs[2])
-axs[2].set_title("NIRv")
-plt.tight_layout()
+
 ```
 
 
