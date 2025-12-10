@@ -537,26 +537,29 @@ This is a temporary solution
 # | code-fold: true
 # | eval: false
 
-parameters_low = rio.open_rasterio("data/results_parameters_optim_low_resolution.tif")
-parameters_low
-parameters_low = parameters_low.rename(
-    new_name_or_name_dict={"x": "longitude", "y": "latitude"}
+parameters_low = rio.open_rasterio(
+    "data/results_parameters_optim_low_resolution.tif", band_as_variable=True
 )
+parameters_low
+# parameters_low = parameters_low.rename(
+#    new_name_or_name_dict={"x": "longitude", "y": "latitude"}
+# )
 
 # LST high resolution local
-lst_high = rio.open_rasterio("data/cube_LST_median.tif")
+lst_high = rio.open_rasterio("data/cube_LST_median.tif", band_as_variable=True)
 
-lst_high = lst_high.rename(new_name_or_name_dict={"x": "longitude", "y": "latitude"})
+# lst_high = lst_high.rename(new_name_or_name_dict={"x": "longitude", "y": "latitude"})
 
 
-regridder = xe.Regridder(parameters_low, lst_high, method="bilinear")
+# regridder = xe.Regridder(parameters_low, lst_high, method="bilinear")
 
-parameters_high = regridder(parameters_low)
+# parameters_high = regridder(parameters_low)
 
-parameters_high = parameters_high.rename(
-    new_name_or_name_dict={"longitude": "x", "latitude": "y"}
-)
+# parameters_high = parameters_high.rename(
+#    new_name_or_name_dict={"longitude": "x", "latitude": "y"}
+# )
 
+parameters_high = parameters_low.interp_like(lst_high, method="linear")
 
 # parameters_high = parameters_low.rio.reproject_match(lst_high)
 
