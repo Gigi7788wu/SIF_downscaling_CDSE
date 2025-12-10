@@ -561,11 +561,13 @@ lst_high = rio.open_rasterio("data/cube_LST_median.tif", band_as_variable=True)
 
 parameters_high = parameters_low.interp_like(lst_high, method="linear")
 
+parameters_high_da = parameters_high.to_dataarray(name="band")
+
 # parameters_high = parameters_low.rio.reproject_match(lst_high)
 
 # Saving the resample raster
 
-parameters_high.rio.to_raster("data/results_paramaters_high_resolution.tif")
+parameters_high_da.rio.to_raster("data/results_paramaters_high_resolution.tif")
 
 
 output_path = "https://github.com/dpabon/SIF_downscaling_CDSE/raw/refs/heads/main/data/results_paramaters_high_resolution.tif"
