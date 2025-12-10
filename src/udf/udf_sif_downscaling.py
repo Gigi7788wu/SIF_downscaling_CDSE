@@ -57,8 +57,8 @@ def apply_datacube(cube: xarray.DataArray, context: dict) -> xarray.DataArray:
         mean_vi = np.nanmean(vi)
         mean_lst = np.nanmean(lst)
 
-        # Check if any mean predictor is NaN (means all values in window were NaN)
-        if np.isnan(mean_vi) or np.isnan(mean_lst):
+        # Check if any mean predictor is NaN (means all values in window are NaN)
+        if np.isnan(np.sum(mean_vi)) or np.isnan(np.sum(mean_lst)):
             return np.array([np.nan])
         else:
             sif_ds = sif_model(mean_vi, mean_lst, mean_params)

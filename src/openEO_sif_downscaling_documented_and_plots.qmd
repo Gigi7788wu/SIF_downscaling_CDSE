@@ -758,14 +758,24 @@ print(sif_downscaled_local)
 ```
 
 ```{python}
-fig, axs = plt.subplots(nrows=2, figsize=(6, 10))
+fig, axs = plt.subplots(nrows=3, figsize=(6, 10))
 cube_sif_local.plot(ax=axs[0])
 axs[0].set_title("SIF (Original)")
 sif_downscaled_local.plot(ax=axs[1])
 axs[1].set_title("SIF (Downscaled)")
-
+cube_nirv_local.plot(ax=axs[2])
+axs[2].set_title("NIRv")
 plt.tight_layout()
 ```
+
+
+```{python}
+plt.clf()
+
+sif_downscaled_local.plot()
+
+```
+
 
 To validate the downscaling results let's resample the SIF downscaled and compare it with the original product at 5 km.
 
