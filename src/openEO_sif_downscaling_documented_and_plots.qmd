@@ -293,9 +293,6 @@ cube_LST_masked
 For this analysis we will compute a composite of the area of interest using all the observations during the time period for all the variables except SIF that is already one time step observation.
 
 ```{python}
-# cube_SIF_original_median = cube_SIF_original_median.reduce_temporal(reducer="median")
-```
-```{python}
 
 cube_LST_median = cube_LST_masked.reduce_temporal(reducer="max")
 
@@ -453,9 +450,9 @@ my_udf = openeo.UDF.from_file(
         "param_ini": param_ini,
         "param_min": param_min,
         "param_max": param_max,
-        "min_obs": 25,
-        "window_size_lat": 5,
-        "window_size_lon": 5,
+        "min_obs": 40,
+        "window_size_lat": 7,
+        "window_size_lon": 6,
     },
 )
 
