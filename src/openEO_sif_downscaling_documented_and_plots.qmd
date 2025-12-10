@@ -224,6 +224,7 @@ cube_LST = connection.load_collection(
     spatial_extent=spatial_extent_prototype,
     temporal_extent=temporal_extent_prototype,
     bands=["LST"],
+    properties={"orbitDirection": lambda x: x == "DESCENDING"},
 )
 
 cube_LST_qc = connection.load_collection(
