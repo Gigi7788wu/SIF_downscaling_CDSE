@@ -224,7 +224,6 @@ cube_LST = connection.load_collection(
     spatial_extent=spatial_extent_prototype,
     temporal_extent=temporal_extent_prototype,
     bands=["LST"],
-    # properties={"orbitDirection": lambda x: x == "DESCENDING"},
 )
 
 cube_LST_qc = connection.load_collection(
@@ -301,7 +300,6 @@ For this analysis we will compute a composite of the area of interest using all 
 cube_LST_median = cube_LST_masked.reduce_temporal(reducer="max")
 
 cube_NIRv_median = cube_NIRv_masked.reduce_temporal(reducer="median")
-
 
 ```
 
@@ -541,6 +539,7 @@ This is a temporary solution
 ```{python}
 # | code-fold: true
 # | eval: false
+
 parameters_low = rio.open_rasterio("data/results_parameters_optim_low_resolution.tif")
 parameters_low
 parameters_low = parameters_low.rename(
@@ -554,7 +553,7 @@ lst_high = lst_high.rename(new_name_or_name_dict={"x": "longitude", "y": "latitu
 
 
 regridder = xe.Regridder(
-    parameters_low, lst_high, method="nearest_s2d", extrap_method="nearest_s2d"
+    parameters_low, lst_high, method="bilinear"
 )
 
 parameters_high = regridder(parameters_low)
