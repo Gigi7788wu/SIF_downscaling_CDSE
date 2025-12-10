@@ -224,7 +224,7 @@ cube_LST = connection.load_collection(
     spatial_extent=spatial_extent_prototype,
     temporal_extent=temporal_extent_prototype,
     bands=["LST"],
-    properties={"orbitDirection": lambda x: x == "DESCENDING"},
+    # properties={"orbitDirection": lambda x: x == "DESCENDING"},
 )
 
 cube_LST_qc = connection.load_collection(
@@ -298,7 +298,7 @@ For this analysis we will compute a composite of the area of interest using all 
 ```
 ```{python}
 
-cube_LST_median = cube_LST_masked.reduce_temporal(reducer="median")
+cube_LST_median = cube_LST_masked.reduce_temporal(reducer="max")
 
 cube_NIRv_median = cube_NIRv_masked.reduce_temporal(reducer="median")
 
