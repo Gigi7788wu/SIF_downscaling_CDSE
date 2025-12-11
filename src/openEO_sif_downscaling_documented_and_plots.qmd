@@ -699,12 +699,12 @@ cube_to_upscale = cube_to_upscale.merge_cubes(cube_NIRv_median_1)
 
 ```{python}
 # | eval: false
-# cube_to_upscale.execute_batch(outputfile="data/sif_predictors_cube_high.nc")
+# cube_to_upscale.execute_batch(outputfile="data/sif_predictors_cube_high.tif")
 ```
 
 Checking that everything is in order with the code to upscale
 ```{python}
-cube_to_upscale_local = xr.open_dataset("data/sif_predictors_cube_high.nc")
+cube_to_upscale_local = xr.open_dataset("data/sif_predictors_cube_high.tif")
 
 print(cube_to_upscale_local)
 ```
@@ -718,7 +718,7 @@ To downscale SIF we will use @def-sif. The code implementation of @def-sif is av
 ```{python}
 udf_sif_prediction = openeo.UDF.from_file(
     "src/udf/udf_sif_downscaling.py",
-    context={"window_size_lat": 3, "window_size_lon": 3},
+    context={"window_size_lat": 10, "window_size_lon": 10},
 )
 
 sif_downscaled = cube_to_upscale.apply_neighborhood(
