@@ -22,6 +22,7 @@ We will need the following libraries to run dowscaling processor
 ```{python}
 import openeo
 import rioxarray as rio
+from networkx.algorithms.community.quality import inter_community_edges
 
 """
 Currently there is an issue with openEO back-end that doesnt allow us to upsample datacubes (For more details see [here](https://forum.dataspace.copernicus.eu/t/how-to-spatial-upsampling-when-using-resample-cube-spatial/4358/6)). For this reason we will need some other libraries to process the parameters cube locally, perform a spatial upsample, create a stac catalog and publish the file and catalog on github.
@@ -560,6 +561,7 @@ regridder = xe.Regridder(
     parameters_low,
     lst_high,
     method="bilinear",
+    extrap_method="nearest_s2d",
 )
 
 parameters_high = regridder(parameters_low)
