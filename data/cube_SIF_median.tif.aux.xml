@@ -1,0 +1,12 @@
+<PAMDataset>
+  <PAMRasterBand band="1">
+    <Description>SIF</Description>
+    <Metadata>
+      <MDI key="STATISTICS_MAXIMUM">0.61389660835266</MDI>
+      <MDI key="STATISTICS_MEAN">0.17498571878403</MDI>
+      <MDI key="STATISTICS_MINIMUM">0.018809577450156</MDI>
+      <MDI key="STATISTICS_STDDEV">0.066337658194312</MDI>
+      <MDI key="STATISTICS_VALID_PERCENT">80</MDI>
+    </Metadata>
+  </PAMRasterBand>
+</PAMDataset>

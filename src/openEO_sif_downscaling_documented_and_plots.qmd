@@ -718,7 +718,7 @@ To downscale SIF we will use @def-sif. The code implementation of @def-sif is av
 ```{python}
 udf_sif_prediction = openeo.UDF.from_file(
     "src/udf/udf_sif_downscaling.py",
-    context={"window_size_lat": 10, "window_size_lon": 10},
+    context={"window_size_lat": 3, "window_size_lon": 3},
 )
 
 sif_downscaled = cube_to_upscale.apply_neighborhood(

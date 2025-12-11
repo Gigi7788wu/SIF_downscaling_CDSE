@@ -1,0 +1,38 @@
+<PAMDataset>
+  <Subdataset name="LST">
+    <PAMDataset>
+      <PAMRasterBand band="1">
+        <Metadata>
+          <MDI key="STATISTICS_MAXIMUM">330.59399414062</MDI>
+          <MDI key="STATISTICS_MEAN">322.56007630591</MDI>
+          <MDI key="STATISTICS_MINIMUM">308.89801025391</MDI>
+          <MDI key="STATISTICS_STDDEV">3.3268671644192</MDI>
+        </Metadata>
+      </PAMRasterBand>
+    </PAMDataset>
+  </Subdataset>
+  <Subdataset name="NIRv">
+    <PAMDataset>
+      <PAMRasterBand band="1">
+        <Metadata>
+          <MDI key="STATISTICS_MAXIMUM">0.23679007589817</MDI>
+          <MDI key="STATISTICS_MEAN">0.067679878388118</MDI>
+          <MDI key="STATISTICS_MINIMUM">0.032013155519962</MDI>
+          <MDI key="STATISTICS_STDDEV">0.021435152210073</MDI>
+        </Metadata>
+      </PAMRasterBand>
+    </PAMDataset>
+  </Subdataset>
+  <Subdataset name="SIF">
+    <PAMDataset>
+      <PAMRasterBand band="1">
+        <Metadata>
+          <MDI key="STATISTICS_MAXIMUM">0.61389660835266</MDI>
+          <MDI key="STATISTICS_MEAN">0.18110757618275</MDI>
+          <MDI key="STATISTICS_MINIMUM">0.028392009437084</MDI>
+          <MDI key="STATISTICS_STDDEV">0.072759411655172</MDI>
+        </Metadata>
+      </PAMRasterBand>
+    </PAMDataset>
+  </Subdataset>
+</PAMDataset>

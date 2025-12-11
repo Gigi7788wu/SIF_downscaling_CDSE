@@ -1,0 +1,13 @@
+<PAMDataset>
+  <PAMRasterBand band="1">
+    <Description>NIRv</Description>
+    <Metadata>
+      <MDI key="STATISTICS_APPROXIMATE">YES</MDI>
+      <MDI key="STATISTICS_MAXIMUM">0.23575487732887</MDI>
+      <MDI key="STATISTICS_MEAN">0.068069865818303</MDI>
+      <MDI key="STATISTICS_MINIMUM">0.018442150205374</MDI>
+      <MDI key="STATISTICS_STDDEV">0.026456494274479</MDI>
+      <MDI key="STATISTICS_VALID_PERCENT">89.08</MDI>
+    </Metadata>
+  </PAMRasterBand>
+</PAMDataset>
