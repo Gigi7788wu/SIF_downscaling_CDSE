@@ -47,10 +47,10 @@ Before going into the details of the datasets we need to define an area of inter
 
 ```{python}
 spatial_extent_prototype = {
-    "west": -6.921387,
-    "east": -1.889648,
-    "south": 37.230328,
-    "north": 40.229218,
+    "west": -7.0,
+    "east": -1.0,
+    "south": 37.0,
+    "north": 40.0,
 }
 
 temporal_extent_prototype = ["2023-07-17", "2023-07-23"]
@@ -360,6 +360,11 @@ cube_NIRv_median_low = cube_NIRv_median.resample_cube_spatial(
 
 ```
 
+
+```{python}
+cube_LST_median_low
+```
+
 Merging all the cubes at low resolution (SIF original resolution)
 
 ```{python}
@@ -384,7 +389,7 @@ dataset_SIF_low = dataset_SIF_low.merge_cubes(
 
 ```{python}
 # | eval: false
-# dataset_SIF_low.execute_batch(outputfile="data/sif_predictors_cube_low.nc")
+# dataset_SIF_low.execute_batch(outputfile="data/sif_predictors_cube_low.tif")
 ```
 
 Let's check the cube after resampling
@@ -822,3 +827,5 @@ plt.clf()
 differences = cube_sif_local - sif_downscaled_resampled_local
 differences.plot()
 ```
+
+Looks like there is a bias produced by 
