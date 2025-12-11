@@ -455,9 +455,9 @@ my_udf = openeo.UDF.from_file(
         "param_ini": param_ini,
         "param_min": param_min,
         "param_max": param_max,
-        "min_obs": 30,
-        "window_size_lat": 7,
-        "window_size_lon": 6,
+        "min_obs": 21,
+        "window_size_lat": 5,
+        "window_size_lon": 5,
     },
 )
 
