@@ -390,7 +390,7 @@ dataset_SIF_low = dataset_SIF_low.merge_cubes(
 
 ```{python}
 # | eval: false
-# dataset_SIF_low.execute_batch(outputfile="data/sif_predictors_cube_low.tif")
+# dataset_SIF_low.execute_batch(outputfile="data/sif_predictors_cube_low.nc")
 ```
 
 Let's check the cube after resampling
@@ -549,28 +549,6 @@ cube_NIRv_median_1.execute_batch("data/cube_nirv_1km_mask.tif")
 Until openEO team solve the upsampling issue. For details see [CDSE discusion forum](https://forum.dataspace.copernicus.eu/t/how-to-spatial-upsampling-when-using-resample-cube-spatial/4358/6) We need to make a workaround to upsample the parameters cube.
 
 :::
-
-
-
-
-```{python}
-nirv_1km_local = rio.open_rasterio("data/cube_nirv_1km_mask.tif")
-print(nirv_1km_local)
-```
-
-```{python}
-plt.clf()
-nirv_1km_local = rio.open_rasterio("data/cube_nirv_1km_mask.tif")
-print(nirv_1km_local)
-# creating a mask band for interpolation
-
-nirv_1km_local["mask"] = xr.where(~np.isnan(nirv_1km_local["band_1"]), 1, 0)
-
-
-nirv_1km_local["mask"].plot()
-
-```
-
 
 This is a temporary solution
 ```{python}
