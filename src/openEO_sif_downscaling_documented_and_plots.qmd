@@ -44,7 +44,7 @@ import numpy as np
 
 ## Area of Interest and Time Period
 
-Before going into the details of the datasets we need to define an area of interest and time period of our analysis. For this example we will focus in the north part of Germany in the period between 2018-06-20 and 2018-06-30.
+Before going into the details of the datasets we need to define an area of interest and time period of our analysis. For this example we will focus in south part of Spain in the period between 2023-07-17 and 2023-07-23.
 
 ```{python}
 spatial_extent_prototype = {
