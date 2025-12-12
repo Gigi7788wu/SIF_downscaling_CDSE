@@ -551,6 +551,18 @@ Until openEO team solve the upsampling issue. For details see [CDSE discusion fo
 :::
 
 
+```{python}
+plt.clf()
+nirv_1km_local = rio.open_rasterio("data/cube_nirv_1km_mask.tif", band_as_variable=True)
+print(nirv_1km_local)
+# creating a mask band for interpolation
+
+nirv_1km_local["mask"] = xr.where(~np.isnan(nirv_1km_local["band_1"]), 1, 0)
+
+
+nirv_1km_local["mask"].plot()
+
+```
 
 
 This is a temporary solution
@@ -566,16 +578,10 @@ parameters_low = parameters_low.rename(
     new_name_or_name_dict={"x": "longitude", "y": "latitude"}
 )
 
+# LST high resolution local
+lst_high = rio.open_rasterio("data/cube_LST_median.tif")
 
-nirv_1km_local = rio.open_rasterio(
-    "data/cube_nirv_1km_mask.tif", band_as_variable=False
-)
-print(nirv_1km_local)
-# creating a mask band for interpolation
-
-lst_high = nirv_1km_local.rename(
-    new_name_or_name_dict={"x": "longitude", "y": "latitude"}
-)
+lst_high = lst_high.rename(new_name_or_name_dict={"x": "longitude", "y": "latitude"})
 
 
 regridder = xe.Regridder(
@@ -590,8 +596,6 @@ parameters_high = regridder(parameters_low)
 parameters_high = parameters_high.rename(
     new_name_or_name_dict={"longitude": "x", "latitude": "y"}
 )
-
-parameters_high = parameters_high.where(~np.isnan(nirv_1km_local))
 
 # parameters_high = parameters_low.interp_like(lst_high, method="linear")
 
