@@ -22,7 +22,6 @@ We will need the following libraries to run dowscaling processor
 ```{python}
 import openeo
 import rioxarray as rio
-from networkx.algorithms.community.quality import inter_community_edges
 
 """
 Currently there is an issue with openEO back-end that doesnt allow us to upsample datacubes (For more details see [here](https://forum.dataspace.copernicus.eu/t/how-to-spatial-upsampling-when-using-resample-cube-spatial/4358/6)). For this reason we will need some other libraries to process the parameters cube locally, perform a spatial upsample, create a stac catalog and publish the file and catalog on github.
@@ -40,6 +39,7 @@ import subprocess
 import xarray as xr
 import matplotlib.pyplot as plt
 import xesmf as xe
+import numpy as np
 ```
 
 ## Area of Interest and Time Period
@@ -528,6 +528,20 @@ plt.tight_layout()
 
 ....
 
+## Resampling OLCI products at 1 km
+
+Originally the OLCI products are 300 meters resolution, as Sentinel-3 LST product is at 1 km (@tbl-predictors) we need to resample the NIRv cube:
+
+```{python}
+cube_NIRv_median_1 = cube_NIRv_median.resample_cube_spatial(
+    target=cube_LST_median, method="med"
+)
+```
+
+```{python}
+cube_NIRv_median_1.execute_batch("data/cube_nirv_1km_mask.tif")
+```
+
 # Upsampling the parameters cube
 
 ::: {.callout-note}
@@ -536,6 +550,11 @@ Until openEO team solve the upsampling issue. For details see [CDSE discusion fo
 
 :::
 
+
+```{python}
+
+
+```
 
 
 This is a temporary solution
@@ -551,10 +570,17 @@ parameters_low = parameters_low.rename(
     new_name_or_name_dict={"x": "longitude", "y": "latitude"}
 )
 
-# LST high resolution local
-lst_high = rio.open_rasterio("data/cube_LST_median.tif")
+plt.clf()
+nirv_1km_local = rio.open_rasterio("data/cube_nirv_1km_mask.tif", band_as_variable=True)
+print(nirv_1km_local)
+# creating a mask band for interpolation
 
-lst_high = lst_high.rename(new_name_or_name_dict={"x": "longitude", "y": "latitude"})
+nirv_1km_local["mask"] = xr.where(~np.isnan(nirv_1km_local["band_1"]), 1, 0)
+
+
+nirv_1km_local["mask"].plot()
+
+lst_high = nirv_1km_local.rename_dims(dims_dict={"x": "longitude", "y": "latitude"})
 
 
 regridder = xe.Regridder(
@@ -678,16 +704,6 @@ parameters_cube_high
 parameters_cube_high_median = parameters_cube_high
 ```
 
-## Resampling OLCI products at 1 km
-
-Originally the OLCI products are 300 meters resolution, as Sentinel-3 LST product is at 1 km (@tbl-predictors) we need to resample the NIRv cube:
-
-```{python}
-cube_NIRv_median_1 = cube_NIRv_median.resample_cube_spatial(
-    target=cube_LST_median, method="med"
-)
-
-```
 
 
 Then, we can concatenate all the variables in a single cube for prediction:
@@ -832,4 +848,3 @@ differences = cube_sif_local - sif_downscaled_resampled_local
 differences.plot()
 ```
 
-Looks like there is a bias produced by 
