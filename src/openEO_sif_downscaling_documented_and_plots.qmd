@@ -591,7 +591,7 @@ parameters_high = parameters_high.rename(
     new_name_or_name_dict={"longitude": "x", "latitude": "y"}
 )
 
-parameters_high = parameters_high.where(~np.isnan(nirv_1km_local))
+parameters_high = parameters_high.where(nirv_1km_local.isnull())
 
 # parameters_high = parameters_low.interp_like(lst_high, method="linear")
 
