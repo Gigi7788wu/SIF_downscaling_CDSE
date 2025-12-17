@@ -602,10 +602,15 @@ Change the following path accordindly to your github repository.
 :::
 
 ```{python}
+# | code-fold: true
+# | eval: false
+
 output_path = "https://github.com/dpabon/SIF_downscaling_CDSE/raw/refs/heads/main/data/results_paramaters_high_resolution.tif"
 ```
 
 ```{python}
+# | code-fold: true
+# | eval: false
 
 # Get metadata from the raster
 bbox = list(parameters_high.rio.bounds())  # [minx, miny, maxx, maxy]
@@ -840,7 +845,6 @@ plt.tight_layout()
 ```
 
 Now let's do $originalSIF - upscaledSIF$
-
 
 ```{python}
 plt.clf()
