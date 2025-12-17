@@ -8,21 +8,35 @@ TBD
 
 ## Tutorial
 
-You can run the processor following the [tutorial](https://dpabon.github.io/SIF_downscaling_CDSE/)
+You can run the processor following the [tutorial](https://dpabon.github.io/SIF_downscaling_CDSE/) (We recommend [Positron](https://positron.posit.co/) as it included all the batteries needed) 
 
-- First you need to install conda-forge:
+- First you need to install pixi:
+
+https://pixi.sh/latest/
+
+- In positron set pixi tool path:
+
+To check where pixi was installed you can run in a terminal
+
+Linux and Mac:
+```whereis pixi```
+
+Windows:
+```where pixi```
+
+and copy paste the path into Positron settings "Python: Pixi Tool Path".
 
 - clone this github repository:
 
 ```git clone https://github.com/dpabon/SIF_downscaling_CDSE```
 
-- Then re-create the conda environment:
+- Then install the dependencies using pixi:
 
 ```cd SIF_downscaling_CDSE```
 
-```conda env create -f environment.yml```
+```pixi install```
 
-Now you have everything setup to run the [tutorial](https://dpabon.github.io/SIF_downscaling_CDSE/).
+Now you have everything setup to run the [tutorial](https://dpabon.github.io/SIF_downscaling_CDSE/), Don't forget to select the pixi python interpreter before running.
 
 
 - ```openEO_sif_downscaling.py``` contains the active development of the SIF downscaling workflow using openEO.
@@ -40,6 +54,10 @@ A: Please open an [issue](https://github.com/dpabon/SIF_downscaling_CDSE/issues/
 - Q: Can I select a new area to apply the procesor?
  
 A: Sure, just change the values in the area of interest cell
+
+- Q: Why pixi if everyone is using coda-forge?
+
+A: Mainly because of convenience. pixi allows to easily create workspace for multiple platforms (the ones for this project include "linux-64", "win-64", "osx-64", "osx-arm64").
 
 - Q: How can I contribute?
 
