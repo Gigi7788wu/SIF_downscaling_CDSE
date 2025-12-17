@@ -1,0 +1,13 @@
+[workspace]
+channels = ["conda-forge"]
+name = "SIF_downscaling_CDSE"
+platforms = ["linux-64", "win-64", "osx-64", "osx-arm64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+python = "3.13.*"
+ipykernel = ">=7.1.0,<8"
+openeo = ">=0.46.0,<0.47"
+rioxarray = ">=0.20.0,<0.21"

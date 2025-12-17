@@ -3,3 +3,6 @@
 .pytest_cache
 /.quarto/
 **/*.quarto_ipynb
+# pixi environments
+.pixi/*
+!.pixi/config.toml
