@@ -152,10 +152,16 @@ plt.show()
 
 To connect to the openEO insfrastructure in the CDSE we need to create a connection:
 
+::: {.callout-important}
+If you're using Positron to run this tutorial please first open the ```authentication.ipynb``` notebook run the cells there, and follow the instructions. This step is only necessary once, the next time you run the cells of this tutorial openeo will use refresh authentication tokens.
+:::
+
 ```{python}
 connection = openeo.connect(
     "https://openeofed.dataspace.copernicus.eu/"
-).authenticate_oidc()
+)
+
+connection.authenticate_oidc()
 ```
 
 This will open a tab in the web-browser where the user needs to authenticate using the CDSE credentials. For more details on openEO in CDSE please see: [https://dataspace.copernicus.eu/analyse/openeo](https://dataspace.copernicus.eu/analyse/openeo)
@@ -200,8 +206,7 @@ Predictors:
 | Variable name | Collection | Band Name | Spatial resolution |
 |--|--|--|--|
 |Land Surface Temperature| ```SENTINEL3_SLSTR_L2_LST```| ```LST```| 1 km|
-|Terrestrial Chlorophyll Index| ```SENTINEL3_OLCI_L2_LAND```| ```OTCI```| 300 m|
-|Integrated Water Vapour| ```SENTINEL3_OLCI_L2_LAND``` | ```IWV```| 300 m |
+|Near Infrared Vegetation Index| ```SENTINEL3_OLCI_L2_LAND```| ```RC681```, ```RC865```| 300 m|
 : SIF predictors {#tbl-predictors}
 
 ### Creating openEO datacubes for the variables
@@ -340,11 +345,6 @@ plt.tight_layout()
 
 ```
 
-::: {.callout-important}
-The LST composite looks heavily influenced by the orbits. For sure it can be better...for example [Terrascope Sentinel-3 Level 3 Land Surface Temperature daily synthesis product](https://docs.terrascope.be/DataProducts/Sentinel-3/ProductsOverview.html)
-
-OR maybe Sentinel-3 SYN SLSTR bands...
-:::
 
 
 ## Spatial resampling to match the SIF resolution product
@@ -539,7 +539,10 @@ cube_NIRv_median_1 = cube_NIRv_median.resample_cube_spatial(
 ```
 
 ```{python}
+# | eval: false
+"""
 cube_NIRv_median_1.execute_batch("data/cube_nirv_1km_mask.tif")
+"""
 ```
 
 # Upsampling the parameters cube
@@ -592,9 +595,17 @@ parameters_high = parameters_high.rename(
 # Saving the resample raster
 
 parameters_high.rio.to_raster("data/results_paramaters_high_resolution.tif")
+```
 
+::: {.callout-important}
+Change the following path accordindly to your github repository.
+:::
 
+```{python}
 output_path = "https://github.com/dpabon/SIF_downscaling_CDSE/raw/refs/heads/main/data/results_paramaters_high_resolution.tif"
+```
+
+```{python}
 
 # Get metadata from the raster
 bbox = list(parameters_high.rio.bounds())  # [minx, miny, maxx, maxy]
@@ -663,6 +674,7 @@ for i in range(4):
 plt.tight_layout()
 
 ```
+
 
 Once the upsampling functionality is part of openEO one should be able to do:
 
