@@ -26,9 +26,13 @@ Windows:
 
 and copy paste the path into Positron settings "Python: Pixi Tool Path".
 
-- clone this github repository:
+- You need to fork this github repository on github (This step is necessary as currently CDSE is not able to perform upsample operations. Then a spatial upsampling needs to run locally, upload to github and load the results in the CDSE again):
 
-```git clone https://github.com/dpabon/SIF_downscaling_CDSE```
+![fork figure](fork.png)
+
+Then clone the repo into your local machine:
+
+```git clone https://github.com/your_user_name/SIF_downscaling_CDSE```
 
 - Then install the dependencies using pixi:
 
@@ -47,7 +51,7 @@ Now you have everything setup to run the [tutorial](https://dpabon.github.io/SIF
 
 ## FAQ
 
-- Q: I have problems to run the tutorial?
+- Q: Problems to run the tutorial?
 
 A: Please open an [issue](https://github.com/dpabon/SIF_downscaling_CDSE/issues/new) 
 
