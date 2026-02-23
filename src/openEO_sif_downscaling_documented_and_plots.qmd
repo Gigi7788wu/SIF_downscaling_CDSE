@@ -580,15 +580,14 @@ parameters_high_2 = xr.DataArray(parameters_high.data.todense(), coords=paramete
 # Saving the resample raster
 
 parameters_high_2.rio.to_raster("data/results_paramaters_high_resolution.tif")
-```
 
-```{python}
+# plotting results
 # plt.clf()
 fig, axs = plt.subplots(nrows=2, ncols=2, figsize=(8, 6))
 axs = axs.flatten()
 counter = 0
 for i in [1, 2, 5, 6]:
-    parameters_high.isel(band=counter).plot(ax=axs[counter])
+    parameters_high_2.isel(band=counter).plot(ax=axs[counter])
     axs[counter].set_title(f"b{i}")
     counter += 1
 
