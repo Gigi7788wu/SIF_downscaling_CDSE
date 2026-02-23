@@ -9,8 +9,26 @@ jupyter: python3
 toc: true
 toc-depth: 2
 toc-title: Contents
-author: Daniel E. Pabon-Moreno, Qiqi Deng, Gregory Duveiller.
-email: dpabon@bgc-jena.mpg.de
+author: 
+    - name: Daniel E. Pabon-Moreno
+      email: dpabon@bgc-jena.mpg.de
+      attributes:
+        corresponding: true
+      affiliations:
+        - ref: bgc
+    - name: Qiqi Deng
+      affiliations:
+        - ref: bgc
+    - name: Gregory Duveiller
+      affiliations:
+        - ref: bgc
+
+affiliations:
+  - id: bgc
+    name: Max-Planck Institute for Biogeochemistry
+    city: Jena
+    country: Germany
+
 
 ---
 ## Introduction
