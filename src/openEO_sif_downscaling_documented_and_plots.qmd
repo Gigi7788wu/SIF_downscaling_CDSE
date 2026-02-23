@@ -16,6 +16,7 @@ email: dpabon@bgc-jena.mpg.de
 ## Introduction
 
 In the following example we will Downscaled (Increase the spatial resolution) of Sun Induced Fluorescence product derived from Sentinel-5p TROPOMI sensor. A full workflow diagram is presented here: XXXXX
+SIF is 
 
 ## Libraries
 We will need the following libraries to run dowscaling processor
