@@ -573,13 +573,13 @@ nirv_high = nirv_high.drop_vars(["spatial_ref", "band"])
 
 
 
-parameters_high = parameters_low.regrid.linear(nirv_high)
+parameters_high = parameters_low.regrid.conservative(nirv_high)
 
 parameters_high_2 = xr.DataArray(parameters_high.data.todense(), coords=parameters_high.coords)
 
 # Saving the resample raster
 
-parameters_high.rio.to_raster("data/results_paramaters_high_resolution.tif")
+parameters_high_2.rio.to_raster("data/results_paramaters_high_resolution.tif")
 ```
 
 ```{python}
