@@ -1781,92 +1781,21 @@ Target:
 | Sun-Induced Fluorescence, daily corrected (dcSIF) | TROPOMI, gridded | ```SIF``` | 0.05° | 8 days |
 : dcSIF target {#tbl-study3-target}
 
-<!-- TODO: add the reference of the SIF retrieval and the Zenodo DOI of the gridded dcSIF product -->
-
-The dcSIF product was gridded from TROPOMI Level-2 observations to 0.05° 8-day composites with the oversampling approach implemented in SatelliteGridding.jl (C. Frankenberg). The 8-day windows start on 1 January of each year; the window used here (2023-07-20 to 2023-07-27) is time step 26 of 2023. The predictors are the same as in the previous studies (@tbl-predictors).
+The dcSIF product ([Deng et al., 2026; doi:10.5281/zenodo.22766916](https://zenodo.org/records/22766916)) provides global SIF from TROPOMI at 0.05° and 8-day resolution (May 2018 – July 2025). The input Level-2 soundings are retrieved with the artificial neural network approach of [Li et al. (2025)](https://doi.org/10.1016/j.rse.2025.114987) and aggregated onto a regular grid with the oversampling approach of Frankenberg et al., as implemented in [SatelliteGridding.jl](https://github.com/cfranken/SatelliteGridding). dcSIF denotes daily-corrected SIF, obtained with the day-length correction factor of [Köhler et al. (2018)](https://doi.org/10.1029/2018GL079031). The 8-day windows start on 1 January of each year; the window used here (2023-07-20 to 2023-07-27) is time step 26 of 2023. The predictors are the same as in the previous studies (@tbl-predictors).
 
 #### Preparing dcSIF for openEO
 
-The gridded dcSIF product is distributed as yearly NetCDF files (dimensions `lat`, `lon`, `time`). `load_stac` needs a raster file at a public URL described by a STAC item, so the 8-day time step was extracted, cropped to the area of interest plus a 1° margin, written as a Cloud-Optimized GeoTIFF, and described with a STAC item following the structure of the other items in the `data` directory:
+The dcSIF product is distributed on Zenodo as one NetCDF file per year (dimensions `lat`, `lon`, `time`; variable `sif_dc`). `load_stac` cannot read these files directly: it needs a raster file at a public URL described by a STAC item. The script [convert_dcsif_to_stac.py](https://github.com/dpabon/SIF_downscaling_CDSE/blob/main/src/convert_dcsif_to_stac.py) prepares the input used in this study. It:
 
-```{python}
-# | code-fold: true
-# | eval: false
+1. downloads the yearly NetCDF file from [Zenodo](https://zenodo.org/records/22766916) (`TROPOMI_ANN_dcSIF_0d05deg_8day_2023.nc`, about 1.2 GB) to a folder outside the repository and checks its MD5 checksum;
+2. extracts the 8-day time step starting on 2023-07-20 and crops it to the area of interest plus a 1° margin;
+3. writes it as a Cloud-Optimized GeoTIFF (`EPSG:4326`, north-up, nodata −9999);
+4. creates a STAC item with the same structure as the other items in the `data` directory (`datetime` at the centre of the 8-day window, band `SIF` declared in `eo:bands`).
 
-from datetime import timedelta
+The resulting files are `data/2023-07-dcSIF/dcSIF_8day_20230720_20230727_pannonian_basin.tif` and `.json`. To prepare another time step or region, change `YEAR`, `WINDOW_START`, `REGION` and `spatial_extent` at the top of the script and run it from the repository root:
 
-NC_PATH = "/path/to/dcSIF_2023_file.nc"  # yearly NetCDF, 0.05 deg, 8-day
-WINDOW_START = "2023-07-20"
-WINDOW_DAYS = 8
-BUFFER_DEG = 1.0
-NODATA = -9999.0
-
-t0 = datetime.strptime(WINDOW_START, "%Y-%m-%d")
-t1 = t0 + timedelta(days=WINDOW_DAYS - 1)
-tag = f"{t0:%Y%m%d}_{t1:%Y%m%d}"
-f_tif = f"data/2023-07-dcSIF/dcSIF_8day_{tag}_pannonian_basin.tif"
-f_json = f"data/2023-07-dcSIF/dcSIF_8day_{tag}_pannonian_basin.json"
-tif_url = f"https://github.com/dpabon/SIF_downscaling_CDSE/raw/refs/heads/main/{f_tif}"
-
-# Select the time step and crop (lazy: only the subset is read)
-ds = xr.open_dataset(NC_PATH)
-sel_time = ds.time.sel(time=np.datetime64(WINDOW_START), method="nearest").values
-da = ds["sif_dc"].sel(time=sel_time)
-da = da.sel(
-    lon=slice(spatial_extent_prototype["west"] - BUFFER_DEG,
-              spatial_extent_prototype["east"] + BUFFER_DEG),
-    lat=slice(spatial_extent_prototype["south"] - BUFFER_DEG,
-              spatial_extent_prototype["north"] + BUFFER_DEG),  # lat is ascending
-)
-
-# North-up orientation, x/y naming, clean float64 coordinates
-da = da.transpose("lat", "lon").load().sortby("lat", ascending=False)
-da = da.rename({"lat": "y", "lon": "x"}).drop_vars("time", errors="ignore").astype("float32")
-da = da.assign_coords(
-    x=np.round(da.x.values.astype("float64"), 4),
-    y=np.round(da.y.values.astype("float64"), 4),
-)
-
-# Cloud-Optimized GeoTIFF
-da = da.fillna(NODATA).rio.write_crs("EPSG:4326").rio.write_nodata(NODATA)
-da.rio.to_raster(f_tif, driver="COG", compress="DEFLATE")
-
-# STAC item
-bbox = [float(b) for b in da.rio.bounds()]
-item = pystac.Item(
-    id=f"dcSIF_8day_{tag}_pannonian_basin",
-    geometry=mapping(box(*bbox)),
-    bbox=bbox,
-    datetime=t0 + timedelta(days=WINDOW_DAYS / 2),
-    properties={
-        "start_datetime": f"{t0:%Y-%m-%d}T00:00:00Z",
-        "end_datetime": f"{t1:%Y-%m-%d}T23:59:59Z",
-    },
-)
-proj_ext = ProjectionExtension.ext(item, add_if_missing=True)
-proj_ext.shape = [int(da.rio.height), int(da.rio.width)]
-proj_ext.bbox = bbox
-EOExtension.ext(item, add_if_missing=True)
-item.add_asset(
-    key="SIF",
-    asset=pystac.Asset(
-        href=tif_url,
-        title=f"dcSIF 8-day composite {t0:%Y-%m-%d} to {t1:%Y-%m-%d} (0.05 deg)",
-        media_type="image/tiff; application=geotiff; profile=cloud-optimized",
-        extra_fields={"eo:bands": [{"name": "SIF", "nodata": NODATA}]},
-    ),
-)
-
-item_dict = item.to_dict()
-# Same projection fields as the other items (newer pystac versions write proj:code)
-item_dict["properties"].pop("proj:code", None)
-item_dict["properties"]["proj:epsg"] = 4326
-item_dict["stac_extensions"] = [
-    "https://stac-extensions.github.io/eo/v1.1.0/schema.json",
-    "https://stac-extensions.github.io/projection/v1.1.0/schema.json",
-]
-with open(f_json, "w") as f:
-    json.dump(item_dict, f, indent=2)
+```bash
+python src/convert_dcsif_to_stac.py
 ```
 
 For this time step dcSIF is fully valid over the area of interest, with a median of 0.64 and 1st/99th percentiles of 0.31/0.89. This is the same order of magnitude as the Dong Li SIF product, so the parameter bounds of the previous studies are kept.
