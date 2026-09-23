@@ -68,6 +68,17 @@ import xarray_regrid
 import numpy as np
 ```
 
+Colour maps used for LST and NIRv in all the studies:
+
+```{python}
+from matplotlib.colors import LinearSegmentedColormap
+
+cmap_lst = "YlOrRd"
+cmap_nirv = LinearSegmentedColormap.from_list(
+    "nirv", ["#e8dcb5", "#c9b98a", "#9fb46a", "#5e9a45", "#2d6e2e", "#174d1f"]
+)
+```
+
 ## Study number 1: Downscaling SIF in the Iberian peninsula
 
 ### Area of Interest and Time Period
@@ -387,9 +398,9 @@ cube_nirv_local = rio.open_rasterio(filename="data/cube_nirv_1km_mask_iberian_pe
 fig, axs = plt.subplots(nrows=3, figsize=(5, 12))
 cube_sif_local.plot(ax=axs[0], vmin=0)
 axs[0].set_title("SIF")
-cube_lst_local.plot(ax=axs[1])
+cube_lst_local.plot(ax=axs[1], cmap=cmap_lst)
 axs[1].set_title("LST")
-cube_nirv_local.plot(ax=axs[2])
+cube_nirv_local.plot(ax=axs[2], cmap=cmap_nirv, center=False)
 axs[2].set_title("NIRv")
 
 plt.tight_layout()
@@ -457,9 +468,9 @@ print(dataset_sif_low_local)
 fig, axs = plt.subplots(nrows=3, figsize=(5, 12))
 dataset_sif_low_local["SIF"].plot(ax=axs[0], vmin = 0)
 axs[0].set_title("SIF")
-dataset_sif_low_local["LST"].plot(ax=axs[1])
+dataset_sif_low_local["LST"].plot(ax=axs[1], cmap=cmap_lst)
 axs[1].set_title("LST")
-dataset_sif_low_local["NIRv"].plot(ax=axs[2])
+dataset_sif_low_local["NIRv"].plot(ax=axs[2], cmap=cmap_nirv, center=False)
 axs[2].set_title("NIRv")
 plt.tight_layout()
 
@@ -780,8 +791,12 @@ print(cube_to_upscale_local)
 fig, axs = plt.subplots(nrows=3, ncols=2, figsize=(6, 9))
 axs = axs.flatten()
 counter = 0
+# LST (5th band) and NIRv (6th band) use the same colour maps as above
+style = {4: dict(cmap=cmap_lst), 5: dict(cmap=cmap_nirv, center=False)}
 for i in range(6):
-    cube_to_upscale_local["band_data"].isel(band=counter).plot(ax=axs[counter])
+    cube_to_upscale_local["band_data"].isel(band=counter).plot(
+        ax=axs[counter], **style.get(counter, {})
+    )
     axs[counter].set_title(f"b{i}")
     counter += 1
 
@@ -850,10 +865,13 @@ print(sif_downscaled_local)
 ```
 
 ```{python}
+# Same colour bar for both products
+sif_vmax = float(np.nanpercentile(cube_sif_local.values, 99))
+
 fig, axs = plt.subplots(nrows=2, figsize=(6, 10))
-cube_sif_local.plot(ax=axs[0], vmin = 0)
+cube_sif_local.plot(ax=axs[0], vmin=0, vmax=sif_vmax)
 axs[0].set_title("SIF (Original)")
-sif_downscaled_local.plot(ax=axs[1])
+sif_downscaled_local.plot(ax=axs[1], vmin=0, vmax=sif_vmax)
 axs[1].set_title("SIF (Downscaled)")
 
 ```
@@ -887,9 +905,9 @@ sif_downscaled_resampled_local = sif_downscaled_resampled_local.assign_coords({'
 
 ```{python}
 fig, axs = plt.subplots(nrows=2, figsize=(6, 10))
-cube_sif_local.plot(ax=axs[0], vmin = 0)
+cube_sif_local.plot(ax=axs[0], vmin=0, vmax=sif_vmax)
 axs[0].set_title("SIF (Original)")
-sif_downscaled_resampled_local.plot(ax=axs[1])
+sif_downscaled_resampled_local.plot(ax=axs[1], vmin=0, vmax=sif_vmax)
 axs[1].set_title("SIF (Downscaled) resampled")
 
 plt.tight_layout()
@@ -1220,9 +1238,9 @@ cube_nirv_local = rio.open_rasterio(filename="data/cube_nirv_1km_mask_indonesia_
 fig, axs = plt.subplots(nrows=3, figsize=(10, 15))
 cube_sif_local.plot(ax=axs[0], vmin=0)
 axs[0].set_title("SIF")
-cube_lst_local.plot(ax=axs[1])
+cube_lst_local.plot(ax=axs[1], cmap=cmap_lst)
 axs[1].set_title("LST")
-cube_nirv_local.plot(ax=axs[2])
+cube_nirv_local.plot(ax=axs[2], cmap=cmap_nirv, center=False)
 axs[2].set_title("NIRv")
 
 plt.tight_layout()
@@ -1290,9 +1308,9 @@ print(dataset_sif_low_local)
 fig, axs = plt.subplots(nrows=3, figsize=(18, 15))
 dataset_sif_low_local["SIF"].plot(ax=axs[0], vmin = 0)
 axs[0].set_title("SIF")
-dataset_sif_low_local["LST"].plot(ax=axs[1])
+dataset_sif_low_local["LST"].plot(ax=axs[1], cmap=cmap_lst)
 axs[1].set_title("LST")
-dataset_sif_low_local["NIRv"].plot(ax=axs[2])
+dataset_sif_low_local["NIRv"].plot(ax=axs[2], cmap=cmap_nirv, center=False)
 axs[2].set_title("NIRv")
 plt.tight_layout()
 
@@ -1613,8 +1631,12 @@ print(cube_to_upscale_local)
 fig, axs = plt.subplots(nrows=3, ncols=2, figsize=(8, 6))
 axs = axs.flatten()
 counter = 0
+# LST (5th band) and NIRv (6th band) use the same colour maps as above
+style = {4: dict(cmap=cmap_lst), 5: dict(cmap=cmap_nirv, center=False)}
 for i in range(6):
-    cube_to_upscale_local["band_data"].isel(band=counter).plot(ax=axs[counter])
+    cube_to_upscale_local["band_data"].isel(band=counter).plot(
+        ax=axs[counter], **style.get(counter, {})
+    )
     axs[counter].set_title(f"b{i}")
     counter += 1
 
@@ -1683,10 +1705,13 @@ print(sif_downscaled_local)
 ```
 
 ```{python}
+# Same colour bar for both products
+sif_vmax = float(np.nanpercentile(cube_sif_local.values, 99))
+
 fig, axs = plt.subplots(nrows=2, figsize=(6, 10))
-cube_sif_local.plot(ax=axs[0], vmin = 0)
+cube_sif_local.plot(ax=axs[0], vmin=0, vmax=sif_vmax)
 axs[0].set_title("SIF (Original)")
-sif_downscaled_local.plot(ax=axs[1])
+sif_downscaled_local.plot(ax=axs[1], vmin=0, vmax=sif_vmax)
 axs[1].set_title("SIF (Downscaled)")
 
 ```
@@ -1720,9 +1745,9 @@ sif_downscaled_resampled_local = sif_downscaled_resampled_local.assign_coords({'
 
 ```{python}
 fig, axs = plt.subplots(nrows=2, figsize=(6, 10))
-cube_sif_local.plot(ax=axs[0], vmin = 0)
+cube_sif_local.plot(ax=axs[0], vmin=0, vmax=sif_vmax)
 axs[0].set_title("SIF (Original)")
-sif_downscaled_resampled_local.plot(ax=axs[1])
+sif_downscaled_resampled_local.plot(ax=axs[1], vmin=0, vmax=sif_vmax)
 axs[1].set_title("SIF (Downscaled) resampled")
 
 plt.tight_layout()
@@ -1747,10 +1772,6 @@ This study applies the same workflow to a third region and replaces the SIF inpu
 | Region | Iberian Peninsula / Indonesia | Pannonian Basin (Hungary and surroundings) |
 | Time window | 5 days | 2023-07-20 to 2023-07-27 |
 : Differences between Study 3 and the previous studies {#tbl-study3-differences}
-
-### Why the Pannonian Basin
-
-The parameters are fitted in a moving window, and each window needs enough cells where SIF, NIRv and LST are valid at the same time. In practice the limiting factor is cloud cover in the Sentinel-3 OLCI observations used for NIRv. A test over East China (116–123.8° E, 28.3–33.7° N) in late July 2023 showed that only about half of the land had a valid NIRv composite after cloud masking, and the fitted parameters covered only a fraction of the region. For the same period, the Pannonian Basin has an almost complete clear-sky NIRv composite, lies entirely over land, and shows strong spatial contrasts (Great Hungarian Plain, hills and forests, irrigated and rainfed croplands), which is where downscaling adds most information.
 
 ### Area of Interest and Time Period
 
@@ -1778,10 +1799,10 @@ Target:
 
 | Variable name | Source | Band Name | Spatial resolution | Temporal resolution |
 |--|--|--|--|--|
-| Sun-Induced Fluorescence, daily corrected (dcSIF) | TROPOMI, gridded | ```SIF``` | 0.05° | 8 days |
+| Sun-Induced Fluorescence, day-length corrected (dcSIF) | TROPOMI, gridded | ```SIF``` | 0.05° | 8 days |
 : dcSIF target {#tbl-study3-target}
 
-The dcSIF product ([Deng et al., 2026; doi:10.5281/zenodo.22766916](https://zenodo.org/records/22766916)) provides global SIF from TROPOMI at 0.05° and 8-day resolution (May 2018 – July 2025). The input Level-2 soundings are retrieved with the artificial neural network approach of [Li et al. (2025)](https://doi.org/10.1016/j.rse.2025.114987) and aggregated onto a regular grid with the oversampling approach of Frankenberg et al., as implemented in [SatelliteGridding.jl](https://github.com/cfranken/SatelliteGridding). dcSIF denotes daily-corrected SIF, obtained with the day-length correction factor of [Köhler et al. (2018)](https://doi.org/10.1029/2018GL079031). The 8-day windows start on 1 January of each year; the window used here (2023-07-20 to 2023-07-27) is time step 26 of 2023. The predictors are the same as in the previous studies (@tbl-predictors).
+The dcSIF product ([Deng et al., 2026; doi:10.5281/zenodo.22766916](https://zenodo.org/records/22766916)) provides day length corrected global SIF from TROPOMI at 0.05° and 8-day resolution (May 2018 – July 2025). The input Level-2 soundings are retrieved with the artificial neural network approach of [Li et al. (2025)](https://doi.org/10.1016/j.rse.2025.114987) and aggregated onto a regular grid with the oversampling approach of Frankenberg et al., as implemented in [SatelliteGridding.jl](https://github.com/cfranken/SatelliteGridding). The day-length correction follows [Köhler et al. (2018)](https://doi.org/10.1029/2018GL079031). The 8-day windows start on 1 January of each year; the window used here (2023-07-20 to 2023-07-27) is time step 26 of 2023. The predictors are the same as in the previous studies (@tbl-predictors).
 
 #### Preparing dcSIF for openEO
 
@@ -1798,7 +1819,7 @@ The resulting files are `data/2023-07-dcSIF/dcSIF_8day_20230720_20230727_pannoni
 python src/convert_dcsif_to_stac.py
 ```
 
-For this time step dcSIF is fully valid over the area of interest, with a median of 0.64 and 1st/99th percentiles of 0.31/0.89. This is the same order of magnitude as the Dong Li SIF product, so the parameter bounds of the previous studies are kept.
+For this time step, dcSIF is available for all grid cells of the area of interest (median 0.64; 1st and 99th percentiles 0.31 and 0.89). The parameter bounds of the previous studies are kept.
 
 #### Creating openEO datacubes for the variables
 
@@ -1883,14 +1904,17 @@ cube_sif_local = rio.open_rasterio(
 )
 cube_lst_local = rio.open_rasterio(filename="data/cube_LST_median_pannonian_basin_dcsif.tif")
 cube_nirv_local = rio.open_rasterio(filename="data/cube_nirv_1km_mask_pannonian_basin_dcsif.tif")
+```
 
-fig, axs = plt.subplots(nrows=3, figsize=(7, 14))
+```{python}
+fig, axs = plt.subplots(nrows=3, figsize=(5, 12))
 cube_sif_local.plot(ax=axs[0], vmin=0)
-axs[0].set_title("dcSIF (0.05°)")
-cube_lst_local.plot(ax=axs[1])
-axs[1].set_title("LST (1 km)")
-cube_nirv_local.plot(ax=axs[2])
-axs[2].set_title("NIRv (1 km)")
+axs[0].set_title("dcSIF")
+cube_lst_local.plot(ax=axs[1], cmap=cmap_lst)
+axs[1].set_title("LST")
+cube_nirv_local.plot(ax=axs[2], cmap=cmap_nirv, center=False)
+axs[2].set_title("NIRv")
+
 plt.tight_layout()
 ```
 
@@ -1917,11 +1941,7 @@ dataset_SIF_low = dataset_SIF_low.merge_cubes(
 )
 ```
 
-::: {.callout-warning}
-**Sensitivity of the aggregation to data gaps.** NIRv is aggregated from 300 m to the SIF grid with `method="med"`. In the East China test this dropped SIF-grid cells containing many masked (cloudy) OLCI pixels: at 0.1° the valid NIRv fraction fell from 0.49 (1 km NIRv averaged locally) to 0.15, and the fitted parameters became very sparse. Aggregating the 1 km NIRv (`cube_NIRv_median_1`) with `method="average"` recovered most of the coverage. In mostly clear-sky regions such as the Pannonian Basin the original approach works, but in cloudy regions it is worth checking the valid fraction of the low-resolution predictors before running the optimization.
-:::
-
-Checking the cube after resampling, including the fraction of cells where SIF, LST and NIRv are all valid:
+Let's check the cube after resampling
 
 ```{python}
 # | eval: false
@@ -1930,16 +1950,18 @@ dataset_SIF_low.execute_batch(outputfile="data/sif_predictors_cube_low_pannonian
 
 ```{python}
 dataset_sif_low_local = xr.open_dataset("data/sif_predictors_cube_low_pannonian_basin_dcsif.nc")
+print(dataset_sif_low_local)
+```
 
-valid = {name: dataset_sif_low_local[name].notnull() for name in ["SIF", "LST", "NIRv"]}
-valid["All three"] = valid["SIF"] & valid["LST"] & valid["NIRv"]
-for name, m in valid.items():
-    print(f"{name:10s} valid fraction: {float(m.mean()):.2f}")
-
-fig, axs = plt.subplots(nrows=3, figsize=(7, 14))
-for ax, name in zip(axs, ["SIF", "LST", "NIRv"]):
-    dataset_sif_low_local[name].squeeze().plot(ax=ax)
-    ax.set_title(f"{name} at the dcSIF grid")
+```{python}
+# The band names in the cube are "SIF", "LST" and "NIRv" (see the band name in the dcSIF table)
+fig, axs = plt.subplots(nrows=3, figsize=(5, 12))
+dataset_sif_low_local["SIF"].plot(ax=axs[0], vmin=0)
+axs[0].set_title("dcSIF")
+dataset_sif_low_local["LST"].plot(ax=axs[1], cmap=cmap_lst)
+axs[1].set_title("LST")
+dataset_sif_low_local["NIRv"].plot(ax=axs[2], cmap=cmap_nirv, center=False)
+axs[2].set_title("NIRv")
 plt.tight_layout()
 ```
 
@@ -1981,7 +2003,7 @@ parameters_cube_low_rename = parameters_cube_low.rename_labels(
 )
 ```
 
-Notice that `window_size_lat = window_size_lon = 7` means a window of 15 × 15 grid cells. At the 0.05° resolution of dcSIF this is 0.75° (about 80 km in latitude), half the spatial support of the same setting on the 0.1° grid of the previous studies.
+With `window_size_lat = window_size_lon = 7` the moving window is 15 × 15 grid cells, i.e. 0.75° on the 0.05° dcSIF grid instead of 1.5° on the 0.1° grid of Study 1 and 2.
 
 ```{python}
 # | eval: false
@@ -1994,23 +2016,21 @@ parameters_cube_low_rename.execute_batch(
 
 ```{python}
 parameters_cube_local = rio.open_rasterio(
-    "data/results_parameters_optim_low_resolution_pannonian_basin_dcsif.tif", masked=True
+    "data/results_parameters_optim_low_resolution_pannonian_basin_dcsif.tif"
 )
+print(parameters_cube_local)
+```
 
-fig, axs = plt.subplots(nrows=2, ncols=2, figsize=(10, 7))
-for k, (ax, name) in enumerate(zip(axs.flatten(), ["b1", "b2", "b5", "b6"])):
-    parameters_cube_local.isel(band=k).plot(ax=ax)
-    ax.set_title(name)
+```{python}
+fig, axs = plt.subplots(nrows=2, ncols=2, figsize=(8, 6))
+axs = axs.flatten()
+counter = 0
+for i in [1, 2, 5, 6]:
+    parameters_cube_local.isel(band=counter).plot(ax=axs[counter])
+    axs[counter].set_title(f"b{i}")
+    counter += 1
+
 plt.tight_layout()
-
-# Fraction of fitted cells and of parameters at the bounds
-fitted = parameters_cube_local.isel(band=0).notnull().values
-print(f"Fitted fraction: {fitted.mean():.2f}")
-for k, name in enumerate(["b1", "b2", "b5", "b6"]):
-    x = parameters_cube_local.isel(band=k).values[fitted]
-    at_lo = np.isclose(x, param_min[k], atol=1e-3).mean()
-    at_hi = np.isclose(x, param_max[k], atol=1e-3).mean()
-    print(f"{name}: at lower bound {at_lo:.2f}, at upper bound {at_hi:.2f}")
 ```
 
 ### Upsampling the parameters cube
@@ -2108,6 +2128,32 @@ cube_to_upscale = parameters_cube_high.merge_cubes(cube_LST_median)
 cube_to_upscale = cube_to_upscale.merge_cubes(cube_NIRv_median_1)
 ```
 
+```{python}
+# | eval: false
+cube_to_upscale.execute_batch(outputfile="data/sif_predictors_cube_high_pannonian_basin_dcsif.tif")
+```
+
+Checking that everything is in order with the code to upscale
+
+```{python}
+cube_to_upscale_local = xr.open_dataset("data/sif_predictors_cube_high_pannonian_basin_dcsif.tif")
+
+print(cube_to_upscale_local)
+```
+
+```{python}
+fig, axs = plt.subplots(nrows=3, ncols=2, figsize=(8, 6))
+axs = axs.flatten()
+style = {4: dict(cmap=cmap_lst), 5: dict(cmap=cmap_nirv, center=False)}
+for counter, name in enumerate(["b1", "b2", "b5", "b6", "LST", "NIRv"]):
+    cube_to_upscale_local["band_data"].isel(band=counter).plot(
+        ax=axs[counter], **style.get(counter, {})
+    )
+    axs[counter].set_title(name)
+
+plt.tight_layout()
+```
+
 ### Downscaling SIF
 
 ```{python}
@@ -2148,10 +2194,13 @@ sif_downscaled_renamed.execute_batch(
 ```{python}
 sif_downscaled_local = rio.open_rasterio("data/openeo_sif_downscaled_pannonian_basin_dcsif.tif")
 
+# Same colour bar for both products
+sif_vmax = float(np.nanpercentile(cube_sif_local.values, 99))
+
 fig, axs = plt.subplots(nrows=2, figsize=(8, 11))
-cube_sif_local.plot(ax=axs[0], vmin=0)
+cube_sif_local.plot(ax=axs[0], vmin=0, vmax=sif_vmax)
 axs[0].set_title("dcSIF (0.05°, original)")
-sif_downscaled_local.plot(ax=axs[1], vmin=0)
+sif_downscaled_local.plot(ax=axs[1], vmin=0, vmax=sif_vmax)
 axs[1].set_title("SIF (1 km, downscaled)")
 plt.tight_layout()
 ```
@@ -2182,7 +2231,7 @@ sif_ds_res.rio.to_raster("data/sif_downscaled_resampled_pannonian_basin_dcsif.ti
 ```
 :::
 
-Comparing the original SIF with the downscaled + aggregated SIF using $originalSIF - upscaledSIF$, with summary statistics over the cells valid in both:
+Comparing the original SIF with the downscaled SIF + spatial resampling, with summary statistics over the cells valid in both:
 
 ```{python}
 sif_orig = cube_sif_local.squeeze()
@@ -2191,8 +2240,6 @@ sif_agg = rio.open_rasterio(
 ).squeeze()
 sif_agg = sif_agg.rio.reproject_match(sif_orig)
 
-differences = sif_orig - sif_agg
-
 both = (sif_orig.notnull() & sif_agg.notnull()).values
 o = sif_orig.values[both]
 d = sif_agg.values[both]
@@ -2200,24 +2247,22 @@ print(f"Common valid cells: {both.sum()}")
 print(f"Bias (original - aggregated): {np.mean(o - d):.3f}")
 print(f"RMSE: {np.sqrt(np.mean((o - d) ** 2)):.3f}")
 print(f"Pearson r: {np.corrcoef(o, d)[0, 1]:.3f}")
+```
 
-fig, axs = plt.subplots(2, 2, figsize=(12, 10))
-sif_orig.plot(ax=axs[0, 0], vmin=0)
-axs[0, 0].set_title("dcSIF (original)")
-sif_agg.plot(ax=axs[0, 1], vmin=0)
-axs[0, 1].set_title("SIF (downscaled, aggregated)")
-differences.plot(ax=axs[1, 0], cmap="RdBu_r", center=0)
-axs[1, 0].set_title("Original - aggregated")
-axs[1, 1].scatter(o, d, s=4, alpha=0.5)
-lim = [0, max(o.max(), d.max())]
-axs[1, 1].plot(lim, lim, "k--", lw=1)
-axs[1, 1].set_xlabel("dcSIF original")
-axs[1, 1].set_ylabel("SIF downscaled, aggregated")
+```{python}
+fig, axs = plt.subplots(nrows=2, figsize=(6, 10))
+sif_orig.plot(ax=axs[0], vmin=0, vmax=sif_vmax)
+axs[0].set_title("dcSIF (Original)")
+sif_agg.plot(ax=axs[1], vmin=0, vmax=sif_vmax)
+axs[1].set_title("SIF (Downscaled) resampled")
+
 plt.tight_layout()
 ```
 
-### Remarks
+Now we can compare the original SIF with the downscaled SIF + spatial resampling using $originalSIF - upscaledSIF$
 
-- The comparison above is a consistency check: the parameters are fitted on the same dcSIF field, so a good agreement shows that the model fits well and that the downscaling does not introduce a bias at the original resolution, but it does not validate the patterns within each 0.05° cell. An independent validation would need higher-resolution references, such as OCO-2/OCO-3 SIF soundings or GPP from eddy-covariance sites.
-- SIF values over water bodies (e.g. Lake Balaton) come from mixed footprints in the gridding and should be masked before interpreting the results.
-- Within one moving window the range of LST can be narrow, which makes $b_5$ and $b_6$ hard to constrain; parameters at the bounds (printed above) indicate this.
+```{python}
+fig, axs = plt.subplots(nrows=1, figsize=(6, 6))
+differences = sif_orig - sif_agg
+differences.plot()
+```
